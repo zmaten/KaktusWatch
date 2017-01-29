@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Globalization;
-using System.IO;
 using Microsoft.Azure.WebJobs;
 
 namespace KaktusWatch
@@ -16,8 +13,8 @@ namespace KaktusWatch
 
         const string kaktusFBUrl = "https://graph.facebook.com/Kaktus/posts?access_token=1672094689755085|671e0538eaaffd57d780c950b713584c";
 
-        static IEnumerable<string> emailRecipients
-            => ((NameValueCollection)ConfigurationManager.GetSection("recipientsSection")).GetValues("address");
+        static IEnumerable<string> EmailRecipients { get; }
+            = ((NameValueCollection) ConfigurationManager.GetSection("recipientsSection")).GetValues("address");
 
         static void Main()
         {
@@ -33,7 +30,7 @@ namespace KaktusWatch
 
             var promotionPost = Worker.GetPromotion(posts);
             if (promotionPost != null)
-                Worker.SendEmails(emailRecipients, promotionPost.Message);
+                Worker.SendEmails(EmailRecipients, promotionPost.Message);
         }
 
     }
