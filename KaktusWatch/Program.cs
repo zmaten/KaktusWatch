@@ -15,7 +15,6 @@ namespace KaktusWatch
         // AzureWebJobsDashboard and AzureWebJobsStorage
 
         const string kaktusFBUrl = "https://graph.facebook.com/Kaktus/posts?access_token=1672094689755085|671e0538eaaffd57d780c950b713584c";
-        const string fileLocation = "LastSentDate.kaktus";
 
         static IEnumerable<string> emailRecipients
             => ((NameValueCollection)ConfigurationManager.GetSection("recipientsSection")).GetValues("address");
@@ -30,28 +29,11 @@ namespace KaktusWatch
             // The following code ensures that the WebJob will be running continuously
             //host.RunAndBlock();
 
-            string lastSentFile;
-            DateTime lastSent;
-            try
-            {
-                lastSentFile = File.ReadAllText(fileLocation);
-            }
-            catch
-            {
-                lastSentFile = string.Empty;
-            }
+            var posts = Worker.GetDataAsync(kaktusFBUrl).Result;
 
-            DateTime.TryParse(lastSentFile, CultureInfo.InvariantCulture, DateTimeStyles.None, out lastSent);
-            if (lastSent.Date == DateTime.UtcNow.Date)
-                return;
-
-            var posts = Worker.GetData(kaktusFBUrl).Result;
-
-            if (Worker.AmIWinningLottery(posts))
-            {
-                Worker.SendEmails(emailRecipients);
-                File.WriteAllText(fileLocation, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
-            }
+            var promotionPost = Worker.GetPromotion(posts);
+            if (promotionPost != null)
+                Worker.SendEmails(emailRecipients, promotionPost.Message);
         }
 
     }
