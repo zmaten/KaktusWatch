@@ -1,6 +1,6 @@
 ﻿{
   "$schema": "http://schemastore.org/schemas/json/webjob-publish-settings.json",
-  "webJobName": "KaktusBitch",
+  "webJobName": "KaktusWatch",
   "runMode": "OnDemand",
   "schedule": "0 0 0/1 1/1 * ? *"
 }
