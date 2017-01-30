@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Configuration;
 using Microsoft.Azure.WebJobs;
 
@@ -14,7 +13,7 @@ namespace KaktusWatch
         const string kaktusFBUrl = "https://graph.facebook.com/Kaktus/posts?access_token=1672094689755085|671e0538eaaffd57d780c950b713584c";
 
         static IEnumerable<string> EmailRecipients { get; }
-            = ((NameValueCollection) ConfigurationManager.GetSection("recipientsSection")).GetValues("address");
+            = ConfigurationManager.AppSettings.GetValues("recipient");
 
         static void Main()
         {
