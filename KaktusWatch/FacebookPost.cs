@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using Newtonsoft.Json;
 
 namespace KaktusWatch
 {
-    public class FbObject
-    {
-        public List<Data> Data { get; set; }
-    }
-
-    public class Data
+    public class FacebookPost
     {
         public string Message { get; set; }
 

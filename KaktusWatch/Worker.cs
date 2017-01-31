@@ -10,33 +10,27 @@ namespace KaktusWatch
 {
     public static class Worker
     {
-
-        public static async Task<FbObject> GetDataAsync(string uri)
+        public static async Task<FacebookFeed> GetDataAsync(string uri)
         {
             var client = new HttpClient();
             var response = await client.GetAsync(uri);
             var data = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<FbObject>(data);
+            return JsonConvert.DeserializeObject<FacebookFeed>(data);
         }
            
+        public static FacebookPost GetPromotion(FacebookFeed posts, int triggerInterval) 
+            => posts?.Data?.FirstOrDefault(p => IsPromotion(p,triggerInterval));
 
-        public static Data GetPromotion(FbObject posts) 
-            => posts?.Data?.FirstOrDefault(IsPromotion);
-
-        static bool IsPromotion(Data post)
-            => post.CreatedTime.Date == DateTime.UtcNow.Date &&
-               post.CreatedTime.TimeOfDay.Hours <= DateTimeOffset.UtcNow.Hour - TriggerInterval &&
+        static bool IsPromotion(FacebookPost post, int triggerInterval)
+            => post.CreatedTime >= DateTimeOffset.UtcNow - new TimeSpan(0, triggerInterval,0) &&
                (post.Message.Contains("www.mujkaktus.cz/chces-pridat") ||
                 post.Message.Contains("kreditnavic"));
-
-        static int TriggerInterval
-            => 1;// TODO: get interval
-
+        
         public static void SendEmails(IEnumerable<string> recipients, string promotionMessage)
         {
             foreach (var recipient in recipients)
             {
-                var mail = new MailMessage("kaktussender@gmail.com", recipient);
+                var mail = new MailMessage("kaktus.watch@gmail.com", recipient);
                 var client = new SmtpClient
                 {
                     Port = 587,
@@ -45,26 +39,26 @@ namespace KaktusWatch
                     Host = "smtp.gmail.com",
                     EnableSsl = true,
                     Timeout = 10000,
-                    Credentials = new System.Net.NetworkCredential("kaktussender@gmail.com", "Buddy Kaktus")
+                    Credentials = new System.Net.NetworkCredential("kaktus.watch@gmail.com", "Heslo323")
                 };
 
-                mail.Subject = "Kaktus watch";
-                mail.Body = GetBody(GetPromotionTimeFrame(promotionMessage));
+                mail.Subject = String.Concat("Kaktus promotion", GetSubject(GetPromotionTimeFrame(promotionMessage)));
+                mail.Body = promotionMessage;
                 client.Send(mail);
             }
         }
 
-        static string GetBody(IEnumerable<int> timeFrame)
+        static string GetSubject(IEnumerable<int> timeFrame)
             => timeFrame.Count() == 2
-                ? $"Double credit promotion available from {timeFrame.First()} to {timeFrame.Last()}"
-                : "Promotion timeframe not available.";
+                ? $" - {timeFrame.First()}:00 to {timeFrame.Last()}:00"
+                : String.Empty;
 
         public static IEnumerable<int> GetPromotionTimeFrame(string message)
         {
             foreach (string word in message.Split(' '))
             {
                 int hour;
-                if (int.TryParse(word, out hour))
+                if (int.TryParse(word.Replace(".",""), out hour))
                     yield return hour;
             }
         }
