@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using KaktusWatch.Core;
 using Microsoft.Azure.WebJobs;
 
 namespace KaktusWatch
@@ -30,10 +31,10 @@ namespace KaktusWatch
             // The following code ensures that the WebJob will be running continuously
             //host.RunAndBlock();
 
-            var posts = Worker.GetDataAsync(kaktusFBUrl).Result;
-            var promotionPost = Worker.GetPromotion(posts, TriggerInterval);
-            if (promotionPost != null)
-                Worker.SendEmails(EmailRecipients, promotionPost.Message);
+            var post = Worker.GetDataAsync(kaktusFBUrl).Result;
+            if (Worker.IsPromotion(post, TriggerInterval))
+                Mailing.SendEmails(EmailRecipients, post.Message);
+
         }
     }
 }

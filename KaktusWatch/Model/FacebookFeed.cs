@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KaktusWatch
+namespace KaktusWatch.Model
 {
     public class FacebookFeed
     {

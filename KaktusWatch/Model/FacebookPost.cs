@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace KaktusWatch
+namespace KaktusWatch.Model
 {
     public class FacebookPost
     {
