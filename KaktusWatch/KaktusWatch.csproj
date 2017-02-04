@@ -103,9 +103,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Mailing.cs" />
+    <Compile Include="Core\Worker.cs" />
     <Compile Include="Model\FacebookFeed.cs" />
     <Compile Include="Model\FacebookPost.cs" />
-    <Compile Include="Core\Mailing.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -114,7 +115,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Core\Worker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -125,7 +125,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Properties\webjob-publish-settings.json" />
-    <None Include="settings.json" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
