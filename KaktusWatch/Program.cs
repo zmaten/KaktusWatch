@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using KaktusWatch.Core;
 using Microsoft.Azure.WebJobs;
 
@@ -19,7 +20,9 @@ namespace KaktusWatch
             => Convert.ToInt32(ConfigurationManager.AppSettings.GetValues("triggerInterval")?[0]);
           
         static IEnumerable<string> EmailRecipients
-            => ConfigurationManager.AppSettings.GetValues("recipient");
+            => ((RecipientsSection) ConfigurationManager.GetSection("Recipients"))
+                .Addresseses.Cast<object>()
+                .Select(value => ((RecipientElement) value).Address);
 
         static void Main()
         {
