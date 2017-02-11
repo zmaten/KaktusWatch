@@ -1,37 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace KaktusWatch.Core
 {
     public class Mailing
     {
-        public static SmtpClient GetClient()
-            => new SmtpClient
-            {
-                Port = 587,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Host = "smtp.gmail.com",
-                EnableSsl = true,
-                Timeout = 10000,
-                Credentials = new NetworkCredential("kaktus.watch@gmail.com", "Heslo323")
-            };
+        public static SendGridAPIClient GetClient()
+            => new SendGridAPIClient("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");
 
-        public static void SendEmails(IEnumerable<string> recipients, string promotionMessage)
+        public static async Task SendEmails(IEnumerable<string> recipients, string promotionMessage)
         {
-            Parallel.ForEach(recipients, recipient =>
+            var sg = GetClient();
+            var from = new Email("kaktussender@gmail.com");
+            var subject = string.Concat("Kaktus promotion", GetSubject(GetPromotionTimeFrame(promotionMessage)));
+            var content = new Content("text/plain", promotionMessage);
+            
+            foreach (var recipient in recipients)
             {
-                var mail = new MailMessage("kaktus.watch@gmail.com", recipient);
-                var client = GetClient();
-
-                mail.Subject = String.Concat("Kaktus promotion", GetSubject(GetPromotionTimeFrame(promotionMessage)));
-                mail.Body = promotionMessage;
-                client.Send(mail);
-            });
+                var to = new Email(recipient);
+                var mail = new Mail(from, subject, to, content);
+                await sg.client.mail.send.post(requestBody: mail.Get());
+            }
         }
 
         static string GetSubject(IEnumerable<int> timeFrame)
@@ -44,7 +37,7 @@ namespace KaktusWatch.Core
             foreach (string word in message.Split(' '))
             {
                 int hour;
-                if (Int32.TryParse(word.Replace(".", ""), out hour))
+                if (int.TryParse(word.Replace(".", ""), out hour))
                     yield return hour;
             }
         }
