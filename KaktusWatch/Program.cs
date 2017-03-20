@@ -36,7 +36,7 @@ namespace KaktusWatch
 
             var post = Worker.GetDataAsync(kaktusFBUrl).Result;
             if (Worker.IsPromotion(post, TriggerInterval))
-                Mailing.SendEmails(EmailRecipients, post.Message);
+                Mailing.SendEmails(EmailRecipients, post.Message).Wait();
 
         }
     }
