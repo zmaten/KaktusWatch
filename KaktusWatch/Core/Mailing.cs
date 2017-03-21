@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SendGrid;
@@ -10,7 +9,7 @@ namespace KaktusWatch.Core
     public class Mailing
     {
         public static SendGridAPIClient GetClient()
-            => new SendGridAPIClient("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");
+            => new SendGridAPIClient("SG"+".QB9FWm07SWm9V-Ydd1To5g.kvnnjYKdcIKT18ItzZnDgzB3hj4CYXfsRuw7X_crMK0");
 
         public static async Task SendEmails(IEnumerable<string> recipients, string promotionMessage)
         {
@@ -35,11 +34,8 @@ namespace KaktusWatch.Core
         public static IEnumerable<int> GetPromotionTimeFrame(string message)
         {
             foreach (string word in message.Split(' '))
-            {
-                int hour;
-                if (int.TryParse(word.Replace(".", ""), out hour))
+                if (int.TryParse(word.Replace(".", "").Replace(":", ""), out int hour))
                     yield return hour;
-            }
         }
     }
 }
